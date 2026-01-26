@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: SAM - each Lambda in its own directory, SNS pipeline
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 128
+    Tracing: Active
+
+Parameters:
+  IngestTopicArn:
+    Type: String
+    Description: ARN of the existing ingest SNS topic
+
+Resources:
+  # --- New SNS topics (non-existing in your description) ---
+  AvgValuesTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: avg-values
+
+  LowValuesTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: low-values
+
+  HighValuesTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: high-values
+
+  # --- Lambda: avg-sensor-values (separate folder) ---
+  AvgSensorValuesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: avg-sensor-values
+      CodeUri: avg-sensor-values/
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          AVG_VALUES_TOPIC_ARN: !Ref AvgValuesTopic
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt AvgValuesTopic.TopicName
+      Events:
+        IngestTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref IngestTopicArn
+
+  # --- Lambda: abnormal-sensor-values (separate folder) ---
+  AbnormalSensorValuesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: abnormal-sensor-values
+      CodeUri: abnormal-sensor-values/
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          LOW_VALUES_TOPIC_ARN: !Ref LowValuesTopic
+          HIGH_VALUES_TOPIC_ARN: !Ref HighValuesTopic
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt LowValuesTopic.TopicName
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt HighValuesTopic.TopicName
+      Events:
+        IngestTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref IngestTopicArn
+
+  # --- Lambda: low-values-processor (separate folder) ---
+  LowValuesProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: low-values-processor
+      CodeUri: low-values-processor/
+      Handler: app.lambda_handler
+      Events:
+        LowValuesTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref LowValuesTopic
+
+  # --- Lambda: high-values-processor (separate folder) ---
+  HighValuesProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: high-values-processor
+      CodeUri: high-values-processor/
+      Handler: app.lambda_handler
+      Events:
+        HighValuesTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref HighValuesTopic
+
+Outputs:
+  AvgValuesTopicArn:
+    Value: !Ref AvgValuesTopic
+  LowValuesTopicArn:
+    Value: !Ref LowValuesTopic
+  HighValuesTopicArn:
+    Value: !Ref HighValuesTopic
