@@ -14,9 +14,12 @@
 2. In the case of received sensor value  less than minimal value to publish into the SNS topic for low values<br>
 3. In the case of received sensor value greater than maximal value to publish into the SNS topic for high values
 ### high-values-processor
-1. Prints sensor id and value received from topic for high values
+1. Prints sensor id , value and timestamp converted to regular date/time received from topic for high values
 ### low-values-processor
-1. Prints sensor id and value received from topic for low values
+1. Prints sensor id , value and timestamp converted to regular date/time received from topic for low values
+
+### avg-values-processor
+1. Prints sensor id, avg value and timestamp converted to regular date/time received from topic for low values
 ## Component test
 1. Start sensor values imitator publishing sensor values into ingest SNS topic<br>
 2. See logs for all lambda functions (CloudWatch)<br>
