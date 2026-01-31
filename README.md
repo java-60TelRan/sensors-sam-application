@@ -3,7 +3,7 @@
 ### avg-sensor-values
 #### based on sensor values received from SNS ingest topic to find average values 
 1. Introduce environment variable REDUCING_SIZE defining number probs after which there should be average value computation and publishing into another SNS topic<br>
-2. Dictionary: key - sensor id, value - list of the sensor values<br>
+2. Dictionary: key - sensor id, value - list of the sensor values <br>
 3. After reaching reducing size for a sensor<br>
 3.1 Compute average value<br>
 3.2 Publish dictionary containing sesnsor id, average value , timestamp into SNS average values topic<br>

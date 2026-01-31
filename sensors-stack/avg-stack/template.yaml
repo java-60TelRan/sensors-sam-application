@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: SAM - average values stack (SNS pipeline)
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 128
+    Tracing: Active
+    Layers:
+      - !Ref CommonLayer
+    Environment:
+      Variables:
+        LOGGER_LEVEL: DEBUG
+        TZ: Asia/Jerusalem
+
+Parameters:
+  IngestTopicArn:
+    Type: String
+    Description: ARN of the existing ingest SNS topic
+
+Resources:
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: logger
+      ContentUri: ../layers/common/
+      RetentionPolicy: Delete
+
+  AvgValuesTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: avg-values
+
+  AvgSensorValuesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: avg-sensor-values
+      CodeUri: avg-sensor-values/
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          AVG_VALUES_TOPIC_ARN: !Ref AvgValuesTopic
+          REDUCING_SIZE: 5
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt AvgValuesTopic.TopicName
+      Events:
+        IngestTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref IngestTopicArn
+
+  AvgValuesProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: avg-values-processor
+      CodeUri: avg-values-processor/
+      Handler: app.lambda_handler
+      Events:
+        AvgValuesTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref AvgValuesTopic
+
+Outputs:
+  AvgValuesTopicArn:
+    Value: !Ref AvgValuesTopic
