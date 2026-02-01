@@ -1,3 +1,4 @@
+#FIXME pathes to code in CodeUri
 # Deprecated: stack was split. Use abnormal-stack/template.yaml or avg-stack/template.yaml
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
@@ -50,7 +51,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: avg-sensor-values
-      CodeUri: avg-sensor-values/
+      CodeUri: avg-stack/avg-sensor-values/
       Handler: app.lambda_handler
       
       Environment:
@@ -71,7 +72,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: abnormal-sensor-values
-      CodeUri: abnormal-sensor-values/
+      CodeUri: abnormal-stack/abnormal-sensor-values/
       Handler: app.lambda_handler
       Environment:
         Variables:
@@ -93,7 +94,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: low-values-processor
-      CodeUri: low-values-processor/
+      CodeUri: abnormal-stack/low-values-processor/
       Handler: app.lambda_handler
       Events:
         LowValuesTopicEvent:
@@ -106,7 +107,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: high-values-processor
-      CodeUri: high-values-processor/
+      CodeUri: abnormal-stack/high-values-processor/
       Handler: app.lambda_handler
       Events:
         HighValuesTopicEvent:
@@ -117,7 +118,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: avg-values-processor
-      CodeUri: avg-values-processor/
+      CodeUri: avg-stack/avg-values-processor/
       Handler: app.lambda_handler
       Events:
         AvgValuesTopicEvent:

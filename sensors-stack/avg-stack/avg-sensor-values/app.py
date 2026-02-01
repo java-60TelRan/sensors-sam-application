@@ -17,6 +17,7 @@ def getAvgValue(sensorId: str, value: int, reduceSize: int) -> float:
 
 def  publishAvg(sensorId: str, topicArn: str, avg: float):
    resp = publish({"sensorId": sensorId, "value":avg, "timestamp": time.time()},topicArn)
+   del sensorsHistory[sensorId]
    logger.debug(f"response from publishing is {resp}") 
       
 def processRecord(record, topicArn: str, reduceSize: int):
