@@ -33,6 +33,21 @@ Resources:
     Properties:
       TopicName: avg-values
 
+  SensorsAggregationTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: sensors-aggregation
+      AttributeDefinitions:
+        - AttributeName: sensorId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sensorId
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 3
+
   AvgSensorValuesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -43,9 +58,12 @@ Resources:
         Variables:
           AVG_VALUES_TOPIC_ARN: !Ref AvgValuesTopic
           REDUCING_SIZE: 5
+          TABLE_NAME: sensors-aggregation
       Policies:
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt AvgValuesTopic.TopicName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SensorsAggregationTable
       Events:
         IngestTopicEvent:
           Type: SNS
