@@ -2,6 +2,14 @@ from logger import logger
 import json
 from publisher import publish
 import os
+# FIXME 
+# Initial SENSORS_NORMAL_VALUES state is empty dictionary
+# Value from a sesnsor comes as SNS message
+# Case 1 -  SENSORS_NORMAL_VALUES doesn't have range for the sensor
+# For Case 1 invoke lamda function (sensor-data-provider) with request for getting the range of the sensor
+# For Case #1 the received range will be inserted to SENSORS_NORMAL_VALUES
+# Case 2 - SENSORS_NORMAL_VALUES does have range for the sensor
+# For Case #2 the minimal/ maximal values will be taken from SENSORS_NORMAL_VALUES
 SENSOR_IDS = ["123", "124", "125", "126"]
 SENSORS_NORMAL_VALUES = {
 SENSOR_IDS[0]: (30, 60),
