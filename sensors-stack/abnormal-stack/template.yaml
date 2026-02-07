@@ -18,6 +18,7 @@ Globals:
 Parameters:
   IngestTopicArn:
     Type: String
+    Default: arn:aws:sns:il-central-1:436705618119:sensors-ingest-topic
     Description: ARN of the existing ingest SNS topic
 
 Resources:
@@ -48,17 +49,28 @@ Resources:
         Variables:
           LOW_VALUES_TOPIC_ARN: !Ref LowValuesTopic
           HIGH_VALUES_TOPIC_ARN: !Ref HighValuesTopic
+          INVOKED_FUNCTION_NAME: !Ref SensorDataProviderFunction
       Policies:
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt LowValuesTopic.TopicName
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt HighValuesTopic.TopicName
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SensorDataProviderFunction
+
       Events:
         IngestTopicEvent:
           Type: SNS
           Properties:
             Topic: !Ref IngestTopicArn
 
+  SensorDataProviderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensor-data-provider
+      CodeUri: sensor-data-provider/
+      Handler: app.lambda_handler
+      
   LowValuesProcessorFunction:
     Type: AWS::Serverless::Function
     Properties:

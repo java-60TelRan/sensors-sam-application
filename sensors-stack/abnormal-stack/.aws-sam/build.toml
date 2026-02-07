@@ -5,7 +5,7 @@ codeuri = "/mnt/c/Users/User/Documents/Java_60/back-end/sensors-lambda-functions
 runtime = "python3.12"
 architecture = "x86_64"
 handler = "app.lambda_handler"
-source_hash = "f52b2cf5f7bef360fdcfbfc93239e220ed4a53163211b715478288dd8bccfbf6"
+source_hash = "4705b4c4616d1652970824c69386c726f4f5974ec020b4380b9537d4256b5a2c"
 manifest_hash = ""
 packagetype = "Zip"
 functions = ["AbnormalSensorValuesFunction"]
@@ -29,5 +29,15 @@ source_hash = "e6803ada814708e542e0c60a8d0d3af39d0cf9c0bc4620a22c18152bb0b14033"
 manifest_hash = ""
 packagetype = "Zip"
 functions = ["HighValuesProcessorFunction"]
+
+[function_build_definitions.33d7d175-939d-4b77-aee8-80bd21ab5478]
+codeuri = "/mnt/c/Users/User/Documents/Java_60/back-end/sensors-lambda-functions/sensors-stack/abnormal-stack/sensor-data-provider"
+runtime = "python3.12"
+architecture = "x86_64"
+handler = "app.lambda_handler"
+source_hash = "3858b8b119bff49cdbfa5ede99a7cfdc2364abfce5845bd239246add4e3a71ca"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["SensorDataProviderFunction"]
 
 [layer_build_definitions]
