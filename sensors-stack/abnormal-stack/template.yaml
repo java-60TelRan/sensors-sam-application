@@ -50,6 +50,7 @@ Resources:
           LOW_VALUES_TOPIC_ARN: !Ref LowValuesTopic
           HIGH_VALUES_TOPIC_ARN: !Ref HighValuesTopic
           INVOKED_FUNCTION_NAME: !Ref SensorDataProviderFunction
+          STALE_TIME: 2
       Policies:
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt LowValuesTopic.TopicName
@@ -70,7 +71,6 @@ Resources:
       FunctionName: sensor-data-provider
       CodeUri: sensor-data-provider/
       Handler: app.lambda_handler
-      
   LowValuesProcessorFunction:
     Type: AWS::Serverless::Function
     Properties:
